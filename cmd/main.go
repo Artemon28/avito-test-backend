@@ -1,41 +1,27 @@
 package main
 
 import (
+	_ "avito-test-backend/docs"
 	"avito-test-backend/internal"
 	"avito-test-backend/internal/repository"
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/viper"
+	swaggerfiles "github.com/swaggo/files"
+	"github.com/swaggo/gin-swagger"
 	"log"
 )
 
-/*
-PUT /deposit/userId:/amount:
-PUT /book/userId:/serviceId:/orderId:/amount:
-PUT /unBook/orderId:
-PUT /withdraw/userID:/serviceId:/orderID:/amount:
-GET /balance/userId: - return JSON with int
+// @title           Avito Backend Test Task
+// @version         1.0
+// @description		Rest API microservice that allowed to manage users bank accounts and create reports for accounting
 
-GET /report/data: - make csv for every service return Url to csv
-GET /transactionlist - return json array
-GET /trnsactionListByDate
-GET /transactionListBySum
-*/
+// @contact.name   Artemiy Chaykov
 
-/*
-user
-	-id
-	-amount
-	-bookamount
+// @license.name  Apache 2.0
+// @license.url   http://www.apache.org/licenses/LICENSE-2.0.html
 
-order
-	-id
-	-fromuserid
-	-touserid
-	-serviceid
-	-amount
-	-date
-	-description
-*/
+// @host      localhost:8080
+// @BasePath  /
 
 func main() {
 	if err := initConfig(); err != nil {
@@ -55,6 +41,7 @@ func main() {
 	}
 
 	router := gin.Default()
+	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
 	repo := repository.NewRepository(db)
 	service := internal.NewService(repo)
 	handler := internal.NewHandler(service)

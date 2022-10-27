@@ -80,6 +80,7 @@ func (s *service) Withdraw(userid, touserId, orederid, serviceid int, amount int
 	user, err := s.r.GetUser(userid)
 	if err != nil {
 		if err != gorm.ErrRecordNotFound {
+			s.UnBook(userid, amount)
 			return structures.User{}, err
 		}
 		return structures.User{}, errors.New("insufficient funds")
@@ -89,10 +90,12 @@ func (s *service) Withdraw(userid, touserId, orederid, serviceid int, amount int
 	}
 	u, err := s.r.UpdateBookAmount(userid, user.Amount, user.Bookamount-amount)
 	if err != nil {
+		s.UnBook(userid, amount)
 		return structures.User{}, err
 	}
 	_, err = s.r.CreateOrder(userid, touserId, serviceid, orederid, amount, time.Now(), "withdraw")
 	if err != nil {
+		s.UnBook(userid, amount)
 		return structures.User{}, err
 	}
 	return u, nil
