@@ -52,8 +52,8 @@ func main() {
 	router.PUT("/unbook", handler.UnBook)
 	router.PUT("/withdraw", handler.Withdraw)
 	router.GET("/balance/:id", handler.Balance)
-	router.GET("/report", handler.Report)
-	router.GET("/transactions", handler.Transactions)
+	router.GET("/report/:month/:year", handler.Report)
+	router.GET("/transactions/:id/:order", handler.Transactions)
 
 	router.Run(viper.GetString("port"))
 }

@@ -2,6 +2,7 @@ package repository
 
 import (
 	"avito-test-backend/internal/structures"
+	"fmt"
 	"gorm.io/gorm"
 )
 
@@ -25,6 +26,7 @@ func (r *UserPostgres) CreateUser(userid int) (int, error) {
 }
 
 func (r *UserPostgres) GetUser(userId int) (structures.User, error) {
+	fmt.Println("hhohooh")
 	var user structures.User
 	err := r.db.First(&user, userId).Error
 	if err != nil {

@@ -5,6 +5,7 @@ import (
 	"avito-test-backend/internal/structures"
 	"encoding/csv"
 	"errors"
+	"fmt"
 	"gorm.io/gorm"
 	"os"
 	"path/filepath"
@@ -25,14 +26,19 @@ func (s *UserService) Deposit(fromuserid, userid, orderid, serviceid int, amount
 	if fromuserid == userid {
 		return structures.User{}, errors.New("unable to deposit money from the same user")
 	}
+	fmt.Println("yes")
 	user, err := s.r.GetUser(userid)
+	fmt.Println("yes")
 	if err != nil {
+		fmt.Println("yes")
 		if err != gorm.ErrRecordNotFound {
 			return structures.User{}, err
 		}
 		s.r.CreateUser(userid)
 	}
+	fmt.Println("yes")
 	u, err := s.r.UpdateAmount(userid, user.Amount+amount)
+	fmt.Println("no")
 	if err != nil {
 		return structures.User{}, err
 	}

@@ -167,24 +167,19 @@ func (h *Handler) Balance(c *gin.Context) {
 // @Tags         Accounting
 // @Accept       json
 // @Produce      json
-// @Param        input body reportRequest true  "month MM, year YYYY"
+// @Param        month   path      int true  "Month"
+// @Param        year   path      int true  "Year"
 // @Success      200  {object}  string
 // @Failure      400
-// @Router       /report [put]
+// @Router       /report/{month}/{year} [get]
 func (h *Handler) Report(c *gin.Context) {
-	var report reportRequest
-	jsonData, err := ioutil.ReadAll(c.Request.Body)
-	if err != nil {
-		c.IndentedJSON(http.StatusBadRequest, "incorrect Body: "+err.Error())
+	month, err := strconv.Atoi(c.Params.ByName("month"))
+	year, err2 := strconv.Atoi(c.Params.ByName("year"))
+	if err != nil || err2 != nil {
+		c.IndentedJSON(http.StatusBadRequest, "incorrect user id")
 		return
 	}
-	err = json.Unmarshal(jsonData, &report)
-	if err != nil {
-		c.IndentedJSON(http.StatusBadRequest, "incorrect Body: "+err.Error())
-		return
-	}
-
-	url, err := h.service.Report(report.Month, report.Year)
+	url, err := h.service.Report(month, year)
 	if err != nil {
 		c.IndentedJSON(http.StatusBadRequest, "bd bad answer: "+err.Error())
 		return
@@ -198,24 +193,19 @@ func (h *Handler) Report(c *gin.Context) {
 // @Tags         User account
 // @Accept       json
 // @Produce      json
-// @Param        input body HistoryRequest true  "user id, preferred order (date/amount/"")"
+// @Param        id   path      int true  "User id"
+// @Param        order   path      string false  "a way to sort order"
 // @Success      200  {object}  structures.Order
 // @Failure      400
-// @Router       /transactions [get]
+// @Router       /transactions/{id}/{order} [get]
 func (h *Handler) Transactions(c *gin.Context) {
-	var history HistoryRequest
-	jsonData, err := ioutil.ReadAll(c.Request.Body)
+	userid, err := strconv.Atoi(c.Params.ByName("id"))
+	sortOrder := c.Params.ByName("sortOrder")
 	if err != nil {
-		c.IndentedJSON(http.StatusBadRequest, "incorrect Body: "+err.Error())
+		c.IndentedJSON(http.StatusBadRequest, "incorrect user id")
 		return
 	}
-	err = json.Unmarshal(jsonData, &history)
-	if err != nil {
-		c.IndentedJSON(http.StatusBadRequest, "incorrect Body: "+err.Error())
-		return
-	}
-
-	orders, err := h.service.Transactions(history.Id, history.SortOrder)
+	orders, err := h.service.Transactions(userid, sortOrder)
 	if err != nil {
 		c.IndentedJSON(http.StatusBadRequest, "bd bad answer "+err.Error())
 		return

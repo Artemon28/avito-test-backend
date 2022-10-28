@@ -1,22 +1,19 @@
 create table users
 (
-    id         integer not null
-        constraint users_pk
-            primary key,
+    id         serial constraint users_pk primary key,
     amount     integer,
     bookamount integer
 );
 
+
 create table orders
 (
-    id         integer not null
-        constraint orders_pk
-            primary key,
-    fromuserid integer REFERENCES users (id),
-    touserid integer REFERENCES users (id),
-    serviceid integer,
-    orderid integer,
-    amount     integer,
-    date date,
-    description varchar(50)
+    id          serial constraint orders_pk primary key,
+    fromuserid  integer references users,
+    touserid    integer references users,
+    serviceid   integer,
+    amount      integer,
+    date        date,
+    description varchar(50),
+    orderid     integer
 );
