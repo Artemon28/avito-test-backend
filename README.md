@@ -10,6 +10,10 @@ docker-compose up --build avito-test-backend
 ```
 docker-compose up avito-test-backend
 ```
+Для подключения swagger надо прописать  
+```
+swag init -g cmd/main.go
+```
 ## Примеры запросов и ответов
 1) Узнать баланс пользователя  
 запрос:  
