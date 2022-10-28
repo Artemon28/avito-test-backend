@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  avito-test-backend:
+    build: .
+    command: ./avito-test-backend
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+    environment:
+      - DB_PASSWORD=UJBNVJ
+
+  db:
+    restart: always
+    image: postgres:latest
+    volumes:
+      - ./data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_PASSWORD=UJBNVJ
+    ports:
+      - "5432:5432"

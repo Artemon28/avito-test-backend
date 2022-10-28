@@ -1,6 +1,7 @@
 package internal
 
 import (
+	services "avito-test-backend/internal/services"
 	"encoding/json"
 	"github.com/gin-gonic/gin"
 	"io/ioutil"
@@ -9,10 +10,10 @@ import (
 )
 
 type Handler struct {
-	service *service
+	service *services.Service
 }
 
-func NewHandler(sr *service) *Handler {
+func NewHandler(sr *services.Service) *Handler {
 	return &Handler{service: sr}
 }
 
@@ -22,7 +23,7 @@ func NewHandler(sr *service) *Handler {
 // @Tags         User account
 // @Accept       json
 // @Produce      json
-// @Param        input body transferRequest true  "User from whom this money, User to whom this money, order id, service id, money amount"
+// @Param        input body transferRequest true  "User from whom this money, User to whom this money, order id, services id, money amount"
 // @Success      200  {object}  structures.User
 // @Failure      400
 // @Router       /deposit [put]
@@ -31,10 +32,12 @@ func (h *Handler) Deposit(c *gin.Context) {
 	jsonData, err := ioutil.ReadAll(c.Request.Body)
 	if err != nil {
 		c.IndentedJSON(http.StatusBadRequest, "incorrect Body: "+err.Error())
+		return
 	}
 	err = json.Unmarshal(jsonData, &transfer)
 	if err != nil {
 		c.IndentedJSON(http.StatusBadRequest, "incorrect Body: "+err.Error())
+		return
 	}
 	u, err := h.service.Deposit(transfer.Fromuserid, transfer.Touserid, transfer.Orderid, transfer.Serviceid, transfer.Amount)
 	if err != nil {
@@ -59,10 +62,12 @@ func (h *Handler) Book(c *gin.Context) {
 	jsonData, err := ioutil.ReadAll(c.Request.Body)
 	if err != nil {
 		c.IndentedJSON(http.StatusBadRequest, "incorrect Body: "+err.Error())
+		return
 	}
 	err = json.Unmarshal(jsonData, &book)
 	if err != nil {
 		c.IndentedJSON(http.StatusBadRequest, "incorrect Body: "+err.Error())
+		return
 	}
 	u, err := h.service.Book(book.Id, book.Amount)
 	if err != nil {
@@ -87,10 +92,12 @@ func (h *Handler) UnBook(c *gin.Context) {
 	jsonData, err := ioutil.ReadAll(c.Request.Body)
 	if err != nil {
 		c.IndentedJSON(http.StatusBadRequest, "incorrect Body: "+err.Error())
+		return
 	}
 	err = json.Unmarshal(jsonData, &book)
 	if err != nil {
 		c.IndentedJSON(http.StatusBadRequest, "incorrect Body: "+err.Error())
+		return
 	}
 	u, err := h.service.UnBook(book.Id, book.Amount)
 	if err != nil {
@@ -106,7 +113,7 @@ func (h *Handler) UnBook(c *gin.Context) {
 // @Tags         User account
 // @Accept       json
 // @Produce      json
-// @Param        input body transferRequest true  "User from whom this money, User to whom this money, order id, service id, money amount"
+// @Param        input body transferRequest true  "User from whom this money, User to whom this money, order id, services id, money amount"
 // @Success      200  {object}  structures.User
 // @Failure      400
 // @Router       /withdraw [put]
@@ -115,10 +122,12 @@ func (h *Handler) Withdraw(c *gin.Context) {
 	jsonData, err := ioutil.ReadAll(c.Request.Body)
 	if err != nil {
 		c.IndentedJSON(http.StatusBadRequest, "incorrect Body: "+err.Error())
+		return
 	}
 	err = json.Unmarshal(jsonData, &transfer)
 	if err != nil {
 		c.IndentedJSON(http.StatusBadRequest, "incorrect Body: "+err.Error())
+		return
 	}
 	u, err := h.service.Withdraw(transfer.Fromuserid, transfer.Touserid, transfer.Orderid, transfer.Serviceid, transfer.Amount)
 	if err != nil {
@@ -154,23 +163,25 @@ func (h *Handler) Balance(c *gin.Context) {
 
 // Report godoc
 // @Summary      report
-// @Description	 create report CSV file with indicating the amount of revenue for each service, return url for the file
+// @Description	 create report CSV file with indicating the amount of revenue for each services, return url for the file
 // @Tags         Accounting
 // @Accept       json
 // @Produce      json
 // @Param        input body reportRequest true  "month MM, year YYYY"
 // @Success      200  {object}  string
 // @Failure      400
-// @Router       /report [get]
+// @Router       /report [put]
 func (h *Handler) Report(c *gin.Context) {
 	var report reportRequest
 	jsonData, err := ioutil.ReadAll(c.Request.Body)
 	if err != nil {
 		c.IndentedJSON(http.StatusBadRequest, "incorrect Body: "+err.Error())
+		return
 	}
 	err = json.Unmarshal(jsonData, &report)
 	if err != nil {
 		c.IndentedJSON(http.StatusBadRequest, "incorrect Body: "+err.Error())
+		return
 	}
 
 	url, err := h.service.Report(report.Month, report.Year)
@@ -196,15 +207,18 @@ func (h *Handler) Transactions(c *gin.Context) {
 	jsonData, err := ioutil.ReadAll(c.Request.Body)
 	if err != nil {
 		c.IndentedJSON(http.StatusBadRequest, "incorrect Body: "+err.Error())
+		return
 	}
 	err = json.Unmarshal(jsonData, &history)
 	if err != nil {
 		c.IndentedJSON(http.StatusBadRequest, "incorrect Body: "+err.Error())
+		return
 	}
 
 	orders, err := h.service.Transactions(history.Id, history.SortOrder)
 	if err != nil {
 		c.IndentedJSON(http.StatusBadRequest, "bd bad answer "+err.Error())
+		return
 	}
 	c.IndentedJSON(http.StatusOK, orders)
 }

@@ -1,4 +1,4 @@
-package internal
+package services
 
 import (
 	"avito-test-backend/internal/repository"
@@ -13,15 +13,18 @@ import (
 	"time"
 )
 
-type service struct {
+type UserService struct {
 	r *repository.Repository
 }
 
-func NewService(rep *repository.Repository) *service {
-	return &service{r: rep}
+func NewUserService(r *repository.Repository) *UserService {
+	return &UserService{r: r}
 }
 
-func (s *service) Deposit(fromuserid, userid, orderid, serviceid int, amount int) (structures.User, error) {
+func (s *UserService) Deposit(fromuserid, userid, orderid, serviceid int, amount int) (structures.User, error) {
+	if fromuserid == userid {
+		return structures.User{}, errors.New("unable to deposit money from the same user")
+	}
 	user, err := s.r.GetUser(userid)
 	if err != nil {
 		if err != gorm.ErrRecordNotFound {
@@ -40,7 +43,7 @@ func (s *service) Deposit(fromuserid, userid, orderid, serviceid int, amount int
 	return u, nil
 }
 
-func (s *service) Book(userid int, bookamount int) (structures.User, error) {
+func (s *UserService) Book(userid int, bookamount int) (structures.User, error) {
 	user, err := s.r.GetUser(userid)
 	if err != nil {
 		if err != gorm.ErrRecordNotFound {
@@ -58,7 +61,7 @@ func (s *service) Book(userid int, bookamount int) (structures.User, error) {
 	return u, nil
 }
 
-func (s *service) UnBook(userid int, bookamount int) (structures.User, error) {
+func (s *UserService) UnBook(userid int, bookamount int) (structures.User, error) {
 	user, err := s.r.GetUser(userid)
 	if err != nil {
 		if err != gorm.ErrRecordNotFound {
@@ -76,7 +79,10 @@ func (s *service) UnBook(userid int, bookamount int) (structures.User, error) {
 	return u, nil
 }
 
-func (s *service) Withdraw(userid, touserId, orederid, serviceid int, amount int) (structures.User, error) {
+func (s *UserService) Withdraw(userid, touserId, orederid, serviceid int, amount int) (structures.User, error) {
+	if userid == touserId {
+		return structures.User{}, errors.New("unable to withdraw money from the same user")
+	}
 	user, err := s.r.GetUser(userid)
 	if err != nil {
 		if err != gorm.ErrRecordNotFound {
@@ -101,7 +107,7 @@ func (s *service) Withdraw(userid, touserId, orederid, serviceid int, amount int
 	return u, nil
 }
 
-func (s *service) Balance(userid int) (int, error) {
+func (s *UserService) Balance(userid int) (int, error) {
 	user, err := s.r.GetUser(userid)
 	if err != nil {
 		if err != gorm.ErrRecordNotFound {
@@ -124,7 +130,7 @@ func rightPath(url string) string {
 	return strings.ReplaceAll(url, "\\", "/")
 }
 
-func (s *service) Report(month int, year int) (string, error) {
+func (s *UserService) Report(month int, year int) (string, error) {
 	orders, err := s.r.GetMonthOrders(month, year)
 	if err != nil {
 		return "", err
@@ -159,7 +165,7 @@ func (s *service) Report(month int, year int) (string, error) {
 	return path, nil
 }
 
-func (s *service) Transactions(userid int, sortOrder string) ([]structures.Order, error) {
+func (s *UserService) Transactions(userid int, sortOrder string) ([]structures.Order, error) {
 	if sortOrder != "date" && sortOrder != "amount" && sortOrder != "" {
 		return nil, errors.New("incorrect order request")
 	}

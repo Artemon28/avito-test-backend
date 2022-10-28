@@ -4,6 +4,7 @@ import (
 	_ "avito-test-backend/docs"
 	"avito-test-backend/internal"
 	"avito-test-backend/internal/repository"
+	"avito-test-backend/internal/services"
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/viper"
 	swaggerfiles "github.com/swaggo/files"
@@ -43,7 +44,7 @@ func main() {
 	router := gin.Default()
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
 	repo := repository.NewRepository(db)
-	service := internal.NewService(repo)
+	service := services.NewService(repo)
 	handler := internal.NewHandler(service)
 
 	router.PUT("/deposit", handler.Deposit)
