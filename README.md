@@ -1,6 +1,6 @@
-#HTTP API Микросервис для работы с балансом пользователей
+# HTTP API Микросервис для работы с балансом пользователей
 ____
-##Запуск
+## Запуск
 Чтобы запустить необходимо ввести команды
 ```
 docker build -t avito-test-backend .
@@ -10,7 +10,7 @@ docker-compose up --build avito-test-backend
 ```
 docker-compose up avito-test-backend
 ```
-##Примеры запросов и ответов
+## Примеры запросов и ответов
 1) Узнать баланс пользователя
 запрос:
 http://localhost:8080/balance/1
@@ -55,9 +55,32 @@ http://localhost:8080/book
 http://localhost:8080/report/10/2022
 Ответ:
 ссылка на CSV файл
+...\\avito-test-backend\\reports\\reportmonth10year2022.csv"
 5) Списое транзакций для пользователя
 Запрос:
 возможно отсортировать по дате "date", по суммам в транзакциях "amount" или не сортировать ""
 http://localhost:8080/transactions/1/date
 Ответ:
 Массив в формате JSON
+[
+  {
+    "id": 1,
+    "fromuserid": 1,
+    "touserid": 2,
+    "serviceid": 1,
+    "orderid": 1,
+    "amount": 100,
+    "date": "2022-10-26T00:00:00Z",
+    "description": "deposit"
+  },
+  {
+    "id": 2,
+    "fromuserid": 1,
+    "touserid": 3,
+    "serviceid": 1,
+    "orderid": 1,
+    "amount": 100,
+    "date": "2022-10-26T00:00:00Z",
+    "description": "deposit"
+  }
+]
